@@ -41,6 +41,17 @@ def trainPerceptronAlgorithm(X, y, learn_rate = 0.01, num_epochs = 25):
         boundary_lines.append((-W[0]/W[1], -b/W[1]))
     return W,b
 
+
+def getY(slope, intercept,x):
+    return (slope * x + intercept)
+
+def getPerceptronLine(w1,w2,b):
+    slope = -(b / w2) / (b / w1)
+    intercept = -b / w2
+    xx = [-0.5,1.5]
+    yy = [getY(slope,intercept,-0.5),getY(slope,intercept,1.5)]
+    return xx,yy
+
 if __name__ == "__main__":
     import pandas as pd
     columns=['x1','x2','y']
@@ -48,18 +59,16 @@ if __name__ == "__main__":
     X=np.array(df.values[:,:2])
     y=np.array(df.values[:,2:])
     result = trainPerceptronAlgorithm(X,y)
-    yzero = - result[1] / result[0][0]
-    xzero = - result[1] / result[0][1]
-    xx = [0,yzero]
-    yy = [xzero,0]
-    plt.plot(xx,yy)
+    line = getPerceptronLine(result[0][0],result[0][1],result[1])
     xes = X[:,:1].reshape(-1)
     yes = X[:,1:].reshape(-1)
-    plt.plot(xes[:50],yes[:50], 'ro')
-    plt.plot(xes[50:],yes[:50], 'go')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title('bla bla')
+    cnt = sum(i < 1 for i in y.reshape(-1))
+    plt.plot(xes[:cnt],yes[:cnt], 'ro')
+    plt.plot(xes[cnt:],yes[:cnt], 'go')
+    plt.plot(line[0],line[1])
+    plt.xlabel('# tests')
+    plt.ylabel('grade')
+    plt.title('Perceptron')
     plt.grid(True)
-    plt.savefig("test.png")
+    plt.savefig("result.png")
     plt.show()
